@@ -41,6 +41,7 @@ export const App: React.FC = () => {
   const [products] = useState(getGatheredProducts);
   const [filter, setFilter] = useState('All');
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const filterProductsByOwnerAndQuery = () => {
     const normalizedQuery = query.toLowerCase().trim();
@@ -132,36 +133,23 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoriesFromServer.map(category => (
+                <a
+                  data-cy="Category"
+                  className={cn(
+                    'button mr-2 my-1',
+                    {
+                      'is-info':
+                        selectedCategory === category.title,
+                    },
+                  )}
+                  href="#/"
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.title)}
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
