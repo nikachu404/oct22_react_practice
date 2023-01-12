@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.scss';
 
+import cn from 'classnames';
+
 import usersFromServer from './api/users';
 import productsFromServer from './api/products';
 import categoriesFromServer from './api/categories';
@@ -37,6 +39,19 @@ const getGatheredProducts = productsWithCategory.map(product => {
 
 export const App: React.FC = () => {
   const [products] = useState(getGatheredProducts);
+  const [filter, setFilter] = useState('All');
+
+  const filterProductsByOwner = () => {
+    return products.filter(product => {
+      if (filter === 'All') {
+        return product;
+      }
+
+      return product?.owner.name === filter;
+    });
+  };
+
+  const visibleProducts = filterProductsByOwner();
 
   return (
     <div className="section">
@@ -51,31 +66,27 @@ export const App: React.FC = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={cn(
+                  { 'is-active': filter === 'All' },
+                )}
+                onClick={() => setFilter('All')}
               >
                 All
               </a>
 
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  key={user.id}
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={cn(
+                    { 'is-active': filter === user.name },
+                  )}
+                  onClick={() => setFilter(user.name)}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -219,7 +230,7 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              {products.map(product => (
+              {visibleProducts.map(product => (
                 <ProductsList product={product} key={product?.id} />
               ))}
             </tbody>
